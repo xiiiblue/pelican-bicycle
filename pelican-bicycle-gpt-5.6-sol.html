@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>鹈鹕骑自行车</title>
+  <style>
+    :root {
+      --sky: #9bdcf4;
+      --sky-deep: #72c6e8;
+      --road: #424b57;
+      --road-line: #f8d36b;
+      --pelican: #f7f0d9;
+      --pelican-shadow: #d8d0b9;
+      --beak: #f2a34e;
+      --beak-deep: #df6f42;
+      --blue: #3387b8;
+      --orange: #ed873d;
+      --ink: #263746;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #d9f4fc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .scene {
+      width: min(100vw, 1100px);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      position: relative;
+      border-radius: 10px;
+      box-shadow: 0 18px 48px rgba(33, 74, 94, .24);
+      background: var(--sky);
+    }
+
+    svg { display: block; width: 100%; height: 100%; }
+
+    .cloud { animation: drift 22s linear infinite; }
+    .cloud.slow { animation-duration: 34s; animation-delay: -12s; }
+    .wheel { transform-box: fill-box; transform-origin: center; animation: spin .85s linear infinite; }
+    .pedal { transform-box: fill-box; transform-origin: center; animation: spin .85s linear infinite; }
+    .rider { transform-box: fill-box; transform-origin: 50% 100%; animation: bob .85s ease-in-out infinite; }
+    .leg-front, .leg-back { transform-box: fill-box; transform-origin: 50% 0%; animation: pedal-leg .85s ease-in-out infinite; }
+    .leg-back { animation-delay: -.425s; }
+    .tail-feather { transform-box: fill-box; transform-origin: 100% 50%; animation: feather .85s ease-in-out infinite; }
+    .grass { animation: grass-sway 1.4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: bottom; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes pedal-leg { 0%, 100% { transform: rotate(20deg); } 50% { transform: rotate(-35deg); } }
+    @keyframes feather { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(7deg); } }
+    @keyframes drift { from { transform: translateX(-170px); } to { transform: translateX(1150px); } }
+    @keyframes grass-sway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene" aria-label="一只鹈鹕正在骑自行车的2D动画">
+    <svg viewBox="0 0 1100 619" role="img" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#79cce9" />
+          <stop offset="1" stop-color="#d1f2f8" />
+        </linearGradient>
+        <linearGradient id="water" x1="0" y1="0" x2="1" y2="0">
+          <stop stop-color="#74bfd1" />
+          <stop offset="1" stop-color="#a7d9db" />
+        </linearGradient>
+        <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="180%">
+          <feGaussianBlur stdDeviation="7" />
+        </filter>
+      </defs>
+
+      <rect width="1100" height="619" fill="url(#sky)" />
+      <circle cx="872" cy="103" r="48" fill="#fff4b0" opacity=".8" />
+
+      <g class="cloud" fill="#fff" opacity=".72">
+        <path d="M-80 123c30-34 67-28 87-4 17-44 78-35 83 9 44-17 85 17 78 54H-80z" />
+      </g>
+      <g class="cloud slow" fill="#fff" opacity=".56">
+        <path d="M350 83c24-27 55-23 72-2 16-35 63-29 68 8 35-13 68 13 63 42H350z" />
+      </g>
+
+      <path d="M0 305 Q160 258 310 304 T620 300 T930 302 T1240 295 V390 H0Z" fill="url(#water)" opacity=".78" />
+      <path d="M0 342 Q180 318 370 342 T740 338 T1100 341" fill="none" stroke="#d9f5f5" stroke-width="7" opacity=".55" />
+      <path d="M0 365 Q190 340 380 365 T760 360 T1100 362" fill="none" stroke="#6caebf" stroke-width="4" opacity=".45" />
+
+      <path d="M0 382 Q210 356 425 386 T830 378 T1100 387 V619 H0Z" fill="#9acb83" />
+      <path d="M0 422 Q260 392 522 425 T1100 415 V619 H0Z" fill="#74ad70" />
+      <path d="M0 481 Q270 465 550 484 T1100 477 V619 H0Z" fill="#596875" />
+      <path d="M0 551 H1100 V619 H0Z" fill="#424b57" />
+      <path d="M0 510 Q250 493 535 511 T1100 505" fill="none" stroke="#7e8a93" stroke-width="4" opacity=".55" />
+      <path d="M-20 586 H180 M280 586 H480 M580 586 H780 M880 586 H1140" stroke="var(--road-line)" stroke-width="9" stroke-linecap="round" />
+
+      <g class="grass" stroke="#3b875e" stroke-width="4" stroke-linecap="round" opacity=".8">
+        <path d="M90 482l-8-25M94 482l12-30M99 482l25-18" />
+        <path d="M972 474l-7-25M977 474l14-30M981 474l26-18" />
+        <path d="M210 453l-5-22M214 453l13-25M218 453l20-13" />
+      </g>
+
+      <ellipse cx="548" cy="497" rx="205" ry="18" fill="#253744" opacity=".24" filter="url(#soft-shadow)" />
+
+      <!-- bicycle -->
+      <g stroke="var(--ink)" stroke-linecap="round" stroke-linejoin="round">
+        <g fill="none" stroke-width="7">
+          <circle class="wheel" cx="405" cy="465" r="71" fill="#d7edf0" />
+          <circle class="wheel" cx="704" cy="465" r="71" fill="#d7edf0" />
+          <path d="M405 465L516 459 590 465 704 465 574 333 516 459M574 333l26-27M574 333l-40-18" fill="none" />
+          <path d="M590 465l-17 12M590 465l18 12" />
+        </g>
+        <g class="wheel" fill="none" stroke="#7ca4b1" stroke-width="2.5" opacity=".8">
+          <path d="M405 394v142M334 465h142M355 415l100 100M355 515l100-100" />
+          <path d="M704 394v142M633 465h142M654 415l100 100M654 515l100-100" />
+        </g>
+        <path d="M574 333l12-32 29 1" fill="none" stroke-width="7" />
+        <path d="M600 302q31-3 42 13" fill="none" stroke-width="7" />
+        <path d="M414 462h112" stroke="#ed873d" stroke-width="10" />
+        <circle class="pedal" cx="516" cy="459" r="21" fill="none" stroke-width="5" />
+        <path class="pedal" d="M516 459l19-16M516 459l-19 16" fill="none" stroke-width="5" />
+        <path d="M533 443h17M480 475h-17" stroke-width="5" />
+      </g>
+
+      <!-- pelican -->
+      <g class="rider">
+        <path class="tail-feather" d="M457 283q-76-16-103 19 54 9 89 35z" fill="#e4dbc1" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round" />
+        <path d="M466 201q-36 45-5 105 31 33 89 8 39-22 26-70-16-46-63-55z" fill="var(--pelican)" stroke="var(--ink)" stroke-width="6" />
+        <path d="M493 246q39-27 75 5-21 28-66 28z" fill="#d2c8ae" opacity=".75" />
+        <path d="M521 220q-3-56 29-76 45-18 69 16 18 29-1 60-23 30-65 25z" fill="var(--pelican)" stroke="var(--ink)" stroke-width="6" />
+        <path d="M586 176q28-12 73 2 37 12 43 30-7 17-43 18l-76-15z" fill="var(--beak)" stroke="var(--ink)" stroke-width="6" />
+        <path d="M586 211q47 2 105-3-13 35-54 35-36-5-51-32z" fill="var(--beak-deep)" stroke="var(--ink)" stroke-width="4" />
+        <circle cx="581" cy="174" r="7" fill="var(--ink)" stroke="none" />
+        <path d="M548 154q-10-22 4-34" fill="none" stroke="#df6f42" stroke-width="8" />
+        <path d="M536 236q-14-22-8-43" fill="none" stroke="#d0c7b0" stroke-width="11" />
+        <path d="M500 258q-3 32 18 57" fill="none" stroke="var(--ink)" stroke-width="10" />
+        <path d="M559 261q-3 30 15 52" fill="none" stroke="var(--ink)" stroke-width="10" />
+        <path class="leg-front" d="M520 309l-7 83" fill="none" stroke="#df6f42" stroke-width="10" />
+        <path class="leg-back" d="M574 310l-36 69" fill="none" stroke="#df6f42" stroke-width="10" />
+        <path d="M513 391l17 2M538 379l16 7" fill="none" stroke="var(--ink)" stroke-width="6" />
+        <path d="M480 224q-18 35-3 67" fill="none" stroke="#fffaf0" stroke-width="8" opacity=".8" />
+      </g>
+
+      <g fill="#fff" opacity=".75" font-family="system-ui, sans-serif">
+        <text x="48" y="70" font-size="22" font-weight="700" letter-spacing="1">PELICAN EXPRESS</text>
+        <text x="50" y="96" font-size="13" opacity=".8">一路向海 · 一路自由</text>
+      </g>
+    </svg>
+  </main>
+</body>
+</html>
