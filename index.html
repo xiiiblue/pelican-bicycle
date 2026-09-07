@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="用不同模型生成的鹈鹕骑自行车HTML动画对比。">
   <title>鹈鹕骑自行车·模型生成对比</title>
+  <script defer referrerpolicy="no-referrer-when-downgrade" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   <style>
     :root {
       color-scheme: light;
@@ -170,7 +171,22 @@
     .model .arrow { position: absolute; right: 17px; bottom: 18px; font-size: 18px; transition: transform .2s ease; }
     .model:hover .arrow, .model.active .arrow { transform: translateX(3px); }
 
-    footer { margin-top: 30px; color: var(--muted); font-size: 13px; text-align: center; }
+    .site-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 30px;
+      padding: 18px 4px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .site-footer p { margin: 0; }
+    .footer-meta, .site-counter { display: flex; align-items: center; gap: 14px; }
+    .site-footer a { color: inherit; text-underline-offset: 3px; }
+    .site-footer a:hover { color: var(--blue); }
+    .site-counter strong { color: var(--ink); font-variant-numeric: tabular-nums; }
 
     @media (max-width: 850px) {
       header { display: block; }
@@ -188,6 +204,8 @@
       .open-link::after { content: "↗"; font-size: 18px; }
       .stage { min-height: 0; aspect-ratio: 4 / 3; }
       .models { grid-template-columns: 1fr; }
+      .site-footer, .footer-meta { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .site-footer { padding-left: 2px; text-align: left; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -230,7 +248,16 @@
       <div class="models" id="models"></div>
     </section>
 
-    <footer>纯HTML动画对比实验·页面内容由对应模型生成</footer>
+    <footer class="site-footer">
+      <p>纯HTML动画对比实验·页面内容由对应模型生成</p>
+      <p class="footer-meta">
+        <span class="site-counter" aria-label="站点访问统计">
+          <span id="busuanzi_container_site_uv">访客 <strong id="busuanzi_value_site_uv">—</strong></span>
+          <span id="busuanzi_container_site_pv">浏览 <strong id="busuanzi_value_site_pv">—</strong></span>
+        </span>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">鲁ICP备18050487号-1</a>
+      </p>
+    </footer>
   </main>
 
   <script>
@@ -288,5 +315,6 @@
     });
     select(selected);
   </script>
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c1eb9e467bf94854a861cd5b98f19230"}'></script>
 </body>
 </html>
