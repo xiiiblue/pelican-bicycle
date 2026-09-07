@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鹈鹕的海岸骑行</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f1e9;color:#294c4e;font-family:Arial,"PingFang SC",sans-serif;min-height:100vh;display:grid;place-items:center;padding:32px}main{width:min(1060px,100%)}header{display:flex;align-items:end;justify-content:space-between;margin-bottom:24px;gap:20px}.eyebrow{font-size:11px;letter-spacing:3px;font-weight:700;color:#788b80;margin-bottom:12px}h1{font-size:clamp(25px,4vw,40px);font-weight:500;letter-spacing:2px;margin:0}header p{font-size:13px;color:#829087;margin:0 0 4px}.scene{border-radius:24px;overflow:hidden;background:#dceee7;box-shadow:0 14px 45px #314f4310}svg{width:100%;height:auto;display:block}footer{display:flex;align-items:center;justify-content:space-between;margin-top:20px;font-size:12px;letter-spacing:1px;color:#849086}button{border:1px solid #b7c5b8;border-radius:24px;background:transparent;color:#365955;padding:10px 19px;font:inherit;cursor:pointer}button:hover{background:#e1e8dd}button:focus-visible{outline:3px solid #d99751;outline-offset:4px}.wheel{animation:spin 1.4s linear infinite;transform-box:fill-box;transform-origin:center}.rider{animation:bob .7s ease-in-out infinite}.wing{animation:wing .7s ease-in-out infinite;transform-origin:491px 285px}.scarf{animation:scarf .7s ease-in-out infinite;transform-origin:559px 227px}.ground{animation:travel 2.5s linear infinite}.cloud{animation:travel 35s linear infinite}.pedals{animation:spin 1.4s linear infinite;transform-origin:503px 443px}.leg-a{animation:legA 1.4s linear infinite}.leg-b{animation:legB 1.4s linear infinite}.paused *{animation-play-state:paused!important}@keyframes spin{to{transform:rotate(360deg)}}@keyframes bob{50%{transform:translateY(3px)}}@keyframes wing{50%{transform:rotate(-3deg)}}@keyframes scarf{50%{transform:rotate(6deg)}}@keyframes travel{to{transform:translateX(-360px)}}@keyframes legA{0%,100%{d:path('M 480 325 Q 455 376 503 417')}25%{d:path('M 480 325 Q 496 363 529 443')}50%{d:path('M 480 325 Q 477 400 503 469')}75%{d:path('M 480 325 Q 436 393 477 443')}}@keyframes legB{0%,100%{d:path('M 458 326 Q 459 400 503 469')}25%{d:path('M 458 326 Q 424 393 477 443')}50%{d:path('M 458 326 Q 439 376 503 417')}75%{d:path('M 458 326 Q 480 363 529 443')}}@media(max-width:600px){body{padding:18px}header{display:block}header p{margin-top:12px}footer{letter-spacing:0;font-size:10px}}@media(prefers-reduced-motion:reduce){.scene *{animation-play-state:paused}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">COASTAL RAMBLE / 001</div><h1>海风，和一只鹈鹕。</h1></div><p>慢慢骑，海就在前面。</p></header>
+<div class="scene" id="scene">
+<svg viewBox="0 0 1060 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">鹈鹕骑自行车的2D动画</title><desc id="desc">一只戴绿色帽子、系橙色围巾的白色鹈鹕，骑着珊瑚红自行车沿海岸前进。双腿蹬动，车轮旋转，云朵和路面向后移动。</desc>
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#dceee7"/><stop offset="1" stop-color="#f0f2dc"/></linearGradient>
+<g id="wheel"><circle r="79" fill="#f6f3df" fill-opacity=".3" stroke="#2d5353" stroke-width="10"/><circle r="71" fill="none" stroke="#fff7de" stroke-width="3"/><g stroke="#789a91" stroke-width="2"><path d="M-70 0H70M0-70V70M-50-50L50 50M-50 50L50-50M-65-27L65 27M-27-65L27 65M-65 27L65-27M-27 65L27-65"/></g><circle r="8" fill="#f5e6c9" stroke="#2d5353" stroke-width="4"/><path d="M24-67A71 71 0 0 1 50-50" fill="none" stroke="#e9ab63" stroke-width="5" stroke-linecap="round"/></g>
+<g id="cloud" fill="#fffdf0" opacity=".8"><path d="M0 26Q0 8 20 10Q26-10 46 0Q62-3 70 12Q94 7 98 26Z"/></g>
+<g id="roadmark" stroke="#e7dac0" stroke-width="4" stroke-linecap="round"><path d="M0 0H40M132 30H149M236-9H248"/></g>
+</defs>
+<path fill="url(#sky)" d="M0 0H1060V620H0Z"/>
+<circle cx="818" cy="120" r="49" fill="#f9d58b"/><circle cx="818" cy="120" r="66" fill="none" stroke="#f5dda5" opacity=".45"/>
+<g class="cloud"><use href="#cloud" x="134" y="106"/><use href="#cloud" x="529" y="71" transform="scale(.8)"/><use href="#cloud" x="960" y="167"/><use href="#cloud" x="1320" y="106"/></g>
+<g fill="none" stroke="#74968c" stroke-width="2" stroke-linecap="round"><path d="M738 208q8-10 16 0q8-10 16 0M866 241q6-7 12 0q6-7 12 0M158 217q6-7 12 0q6-7 12 0"/></g>
+<path d="M0 339Q123 268 253 329T530 332T806 318T1060 335V419H0Z" fill="#b9d5c2"/>
+<path d="M0 371Q125 350 252 371T529 369T805 364T1060 370V465H0Z" fill="#91c6bf"/>
+<g stroke="#d8e7d2" stroke-width="3" stroke-linecap="round" opacity=".7"><path d="M38 394H154M805 394H900M938 413H1002M209 409H293M746 427H825"/></g>
+<path d="M0 449Q289 424 526 450T1060 444V620H0Z" fill="#e9ddbe"/>
+<path d="M0 485Q324 466 574 486T1060 480V620H0Z" fill="#f1e7ce"/>
+<path d="M0 522H1060" stroke="#d6c6a7" stroke-width="2"/>
+<g class="ground"><use href="#roadmark" x="0" y="559"/><use href="#roadmark" x="360" y="559"/><use href="#roadmark" x="720" y="559"/><use href="#roadmark" x="1080" y="559"/></g>
+<ellipse cx="529" cy="529" rx="222" ry="12" fill="#9eaa89" opacity=".18"/>
+<!-- 自行车：轮毂、车架与曲柄 -->
+<g transform="translate(373 440)"><g class="wheel"><use href="#wheel"/></g></g>
+<g transform="translate(683 440)"><g class="wheel"><use href="#wheel"/></g></g>
+<path class="leg-b" d="M458 326Q459 400 503 469" stroke="#cf904e" stroke-width="12" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+<g fill="none" stroke-linejoin="round" stroke-linecap="round">
+<path d="M373 440L443 337L503 443L373 440L636 354L503 443M636 354L683 440M636 354L618 311L641 299" stroke="#b85144" stroke-width="12"/>
+<path d="M373 440L443 337L503 443M383 434L629 354M642 367L681 440" stroke="#e48269" stroke-width="5"/>
+<path d="M443 337L434 316" stroke="#335958" stroke-width="9"/>
+<path d="M411 313Q437 309 461 315" stroke="#335958" stroke-width="12"/>
+<path d="M618 312L609 283Q607 272 623 272H650" stroke="#335958" stroke-width="7"/>
+<path d="M641 272H655" stroke="#d39355" stroke-width="10"/>
+<path d="M632 279Q668 325 659 392" stroke="#456b65" stroke-width="2"/>
+</g>
+<circle cx="503" cy="443" r="21" fill="#355c59"/><circle cx="503" cy="443" r="14" fill="#f0d9b2"/>
+<g class="pedals" stroke="#345854" stroke-width="6" stroke-linecap="round"><path d="M503 417V469"/><path d="M491 417H515M491 469H515" stroke-width="8"/></g>
+<!-- 鹈鹕 -->
+<g class="rider">
+<path d="M438 296L389 275L401 305L377 297Q396 325 443 326" fill="#f8f5e6" stroke="#365c57" stroke-width="3" stroke-linejoin="round"/>
+<path d="M435 274Q459 250 491 256Q511 248 517 213Q519 170 550 168Q578 166 587 189Q592 210 575 239Q553 263 548 294Q542 334 491 344Q444 350 427 324Q414 301 435 274Z" fill="#fffbed" stroke="#365c57" stroke-width="3"/>
+<path d="M538 239Q544 268 526 299Q514 323 477 327Q451 330 435 318Q449 345 491 339Q535 331 543 305Q547 275 558 254Z" fill="#dce6d7"/>
+<path class="leg-a" d="M480 325Q455 376 503 417" stroke="#e0a053" stroke-width="13" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+<path class="wing" d="M457 276Q475 261 494 283Q513 304 552 292L607 273Q616 268 622 276Q618 286 605 287L558 309Q523 325 493 311Q472 307 457 290" fill="#f1f1df" stroke="#365c57" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M468 285Q483 290 491 301M478 281Q490 285 499 297" fill="none" stroke="#bacdbd" stroke-width="2" stroke-linecap="round"/>
+<!-- 大嘴及喉囊 -->
+<path d="M575 203L690 210Q668 249 609 246Q584 242 575 214Z" fill="#e8b362" stroke="#365c57" stroke-width="3" stroke-linejoin="round"/>
+<path d="M581 207L690 210Q656 218 590 218" fill="#f4d285"/>
+<path d="M574 200Q629 194 697 209Q700 212 693 214L575 213Z" fill="#f3bc6b" stroke="#365c57" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="563" cy="192" r="5" fill="#294f4c"/><circle cx="564.5" cy="190.5" r="1.5" fill="#fff"/><path d="M554 181Q561 177 567 181" fill="none" stroke="#365c57" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="556" cy="207" rx="7" ry="4" fill="#ecc8a4"/>
+<!-- 帽子和随风飘动的围巾 -->
+<path d="M528 170Q526 143 549 143Q572 144 576 169Z" fill="#4c7b66" stroke="#365c57" stroke-width="3"/><path d="M523 171Q557 163 588 174" fill="none" stroke="#365c57" stroke-width="7" stroke-linecap="round"/><path d="M534 160Q553 155 571 162" fill="none" stroke="#88a38b" stroke-width="4"/>
+<path class="scarf" d="M553 233Q521 240 502 219Q492 209 466 214L479 222L467 230Q492 223 504 239Q522 252 553 241" fill="#d97150" stroke="#b75a43" stroke-width="2"/>
+<path d="M522 226Q540 239 562 233L559 245Q536 250 519 237Z" fill="#e58b60" stroke="#b75a43" stroke-width="2"/>
+</g>
+<g stroke="#71917a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M57 499l-5-19m5 19 9-14M968 488l-6-19m6 19 11-11"/></g>
+<text x="1008" y="587" text-anchor="end" fill="#a79977" font-family="monospace" font-size="11" letter-spacing="2">ENJOY THE RIDE</text>
+</svg>
+</div>
+<footer><span>一段不赶时间的海岸骑行 · SVG动画</span><button id="toggle" type="button" aria-pressed="false">暂停动画</button></footer>
+</main>
+<script>
+const scene=document.getElementById('scene'),button=document.getElementById('toggle');
+let paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function update(){scene.classList.toggle('paused',paused);button.textContent=paused?'播放动画':'暂停动画';button.setAttribute('aria-pressed',String(paused));if(!paused&&matchMedia('(prefers-reduced-motion: reduce)').matches){scene.querySelectorAll('*').forEach(el=>el.style.animationPlayState='running')}}
+button.addEventListener('click',()=>{paused=!paused;update()});update();
+</script>
+</body>
+</html>
