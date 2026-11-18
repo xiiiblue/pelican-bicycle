@@ -3,321 +3,149 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="用不同模型生成的鹈鹕骑自行车HTML动画对比。">
-  <title>鹈鹕骑自行车·模型生成对比</title>
-  <script defer referrerpolicy="no-referrer-when-downgrade" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-  <style>
-    :root {
-      color-scheme: light;
-      --ink: #173042;
-      --muted: #647784;
-      --paper: rgba(255, 253, 246, .88);
-      --line: rgba(23, 48, 66, .13);
-      --orange: #e66a3c;
-      --blue: #0d7896;
-      --shadow: 0 24px 60px rgba(36, 72, 83, .17);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      color: var(--ink);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 12% 12%, rgba(255, 193, 111, .7), transparent 28rem),
-        radial-gradient(circle at 88% 18%, rgba(92, 190, 201, .5), transparent 27rem),
-        linear-gradient(145deg, #f8f1dc, #ddf0ed 58%, #f7d8b7);
-      background-attachment: fixed;
-    }
-
-    body::before {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      content: "";
-      opacity: .27;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
-    }
-
-    .page {
-      position: relative;
-      width: min(1240px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 42px 0 38px;
-    }
-
-    header {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-family: Georgia, "Noto Serif SC", serif;
-      font-size: clamp(34px, 5vw, 68px);
-      font-weight: 700;
-      letter-spacing: -.045em;
-      line-height: .98;
-    }
-
-    .intro {
-      max-width: 380px;
-      margin: 0 0 4px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    .viewer {
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.8);
-      border-radius: 26px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-    }
-
-    .viewer-bar {
-      display: flex;
-      min-height: 66px;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 12px 16px 12px 22px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .current { min-width: 0; }
-    .current small { display: block; margin-bottom: 2px; color: var(--muted); }
-    .current strong { display: block; overflow: hidden; font-size: 18px; text-overflow: ellipsis; white-space: nowrap; }
-
-    .actions { display: flex; gap: 8px; }
-    button, .open-link {
-      display: inline-flex;
-      height: 40px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--ink);
-      background: rgba(255,255,255,.7);
-      font: inherit;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform .18s ease, background .18s ease, border-color .18s ease;
-    }
-    button { width: 40px; padding: 0; font-size: 19px; }
-    .open-link { padding: 0 17px; background: var(--ink); color: white; }
-    button:hover, .open-link:hover { transform: translateY(-2px); border-color: rgba(23,48,66,.35); }
-    button:focus-visible, .open-link:focus-visible, .model:focus-visible { outline: 3px solid rgba(13,120,150,.35); outline-offset: 2px; }
-
-    .stage {
-      position: relative;
-      aspect-ratio: 16 / 9;
-      min-height: 430px;
-      background: white;
-    }
-    iframe { display: block; width: 100%; height: 100%; border: 0; }
-
-    .catalogue { margin-top: 34px; }
-    .catalogue-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
-    h2 { margin: 0; font-family: Georgia, "Noto Serif SC", serif; font-size: 27px; }
-    .count { color: var(--muted); font-size: 13px; }
-
-    .models {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .model {
-      position: relative;
-      display: block;
-      width: 100%;
-      height: auto;
-      min-height: 88px;
-      padding: 17px 44px 16px 17px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.8);
-      border-radius: 18px;
-      color: var(--ink);
-      background: rgba(255,253,246,.64);
-      box-shadow: 0 8px 24px rgba(36,72,83,.08);
-      text-align: left;
-      cursor: pointer;
-      backdrop-filter: blur(12px);
-      transition: transform .2s ease, background .2s ease, border-color .2s ease;
-    }
-    .model:hover { transform: translateY(-3px); background: rgba(255,255,255,.88); }
-    .model.active { border-color: var(--orange); background: #fff9ee; }
-    .model .number { display: block; margin-bottom: 6px; color: var(--orange); font: 700 11px/1 monospace; letter-spacing: .08em; }
-    .model .name { display: block; overflow: hidden; font-size: 15px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .model .arrow { position: absolute; right: 17px; bottom: 18px; font-size: 18px; transition: transform .2s ease; }
-    .model:hover .arrow, .model.active .arrow { transform: translateX(3px); }
-
-    .site-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      margin-top: 30px;
-      padding: 18px 4px 0;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .site-footer p { margin: 0; }
-    .footer-meta, .site-counter { display: flex; align-items: center; gap: 14px; }
-    .site-footer a { color: inherit; text-underline-offset: 3px; }
-    .site-footer a:hover { color: var(--blue); }
-    .site-counter strong { color: var(--ink); font-variant-numeric: tabular-nums; }
-
-    @media (max-width: 850px) {
-      header { display: block; }
-      .intro { margin-top: 16px; }
-      .models { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .stage { min-height: 360px; }
-    }
-
-    @media (max-width: 560px) {
-      .page { width: min(100% - 20px, 1240px); padding-top: 25px; }
-      .viewer { border-radius: 20px; }
-      .viewer-bar { align-items: flex-start; padding: 13px 13px 13px 17px; }
-      .current strong { font-size: 15px; }
-      .open-link { width: 40px; padding: 0; font-size: 0; }
-      .open-link::after { content: "↗"; font-size: 18px; }
-      .stage { min-height: 0; aspect-ratio: 4 / 3; }
-      .models { grid-template-columns: 1fr; }
-      .site-footer, .footer-meta { align-items: flex-start; flex-direction: column; gap: 8px; }
-      .site-footer { padding-left: 2px; text-align: left; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
-    }
-  </style>
+  <meta name="description" content="在同一道“鹈鹕骑自行车”题目下，浏览和对比不同模型生成的HTML动画。">
+  <meta name="theme-color" content="#f7f7f2">
+  <title>鹈鹕骑自行车 · 鹈鹕实验室</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/site.css">
+  <script defer src="./assets/works.js"></script>
+  <script defer src="./assets/site.js"></script>
 </head>
 <body>
-  <main class="page">
-    <header>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-bike" viewBox="0 0 24 24">
+      <circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/>
+      <path d="m5.5 16.5 4-8 4 8h-8m4-8h6.5m2.5 8L15 6h3m-10 2.5h3"/>
+    </symbol>
+    <symbol id="icon-external" viewBox="0 0 24 24">
+      <path d="M13 5h6v6m0-6-8 8m6 0v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h5"/>
+    </symbol>
+    <symbol id="icon-left" viewBox="0 0 24 24"><path d="M19 12H5m6 6-6-6 6-6"/></symbol>
+    <symbol id="icon-right" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.75" cy="10.75" r="5.75"/><path d="m15 15 4.5 4.5"/></symbol>
+    <symbol id="icon-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m10 7 5 5-5 5"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M9 6.5v11l8-5.5z" fill="currentColor" stroke="none"/></symbol>
+  </svg>
+
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <a class="brand" href="./" aria-label="鹈鹕实验室首页">
+        <span class="brand-icon"><svg class="icon" aria-hidden="true"><use href="#icon-bike"/></svg></span>
+        <span class="brand-name">鹈鹕实验室 <span>PELICAN LAB</span></span>
+      </a>
+      <nav class="site-nav" aria-label="站内导航">
+        <a href="#viewer">演示</a>
+        <a href="#catalogue">目录</a>
+        <a class="repository" href="https://github.com/xiiiblue/pelican-bicycle" target="_blank" rel="noopener noreferrer">
+          GitHub <svg class="icon" aria-hidden="true"><use href="#icon-external"/></svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">Pelican benchmark · HTML edition</p>
-        <h1>同一只鹈鹕，<br>十五种想象。</h1>
+        <p class="hero-label"><span></span> 模型生成对比</p>
+        <h1 id="page-title">鹈鹕骑自行车<span class="title-period" aria-hidden="true">.</span></h1>
+        <p class="hero-description">同一道题，不同模型。看看它们如何用HTML让一只鹈鹕骑上自行车。</p>
       </div>
-      <p class="intro">把同一道“鹈鹕骑自行车”题目交给不同模型。选择一个作品，看看它们如何用HTML、CSS和SVG让鹈鹕动起来。</p>
-    </header>
-
-    <section class="viewer" aria-label="作品预览">
-      <div class="viewer-bar">
-        <div class="current">
-          <small>正在观看</small>
-          <strong id="current-name"></strong>
-        </div>
-        <div class="actions">
-          <button id="previous" type="button" aria-label="上一个作品">←</button>
-          <button id="next" type="button" aria-label="下一个作品">→</button>
-          <a class="open-link" id="open-link" href="" target="_blank" rel="noopener">单独打开 ↗</a>
-        </div>
-      </div>
-      <div class="stage">
-        <iframe id="preview" title="模型生成作品预览" loading="eager"></iframe>
-      </div>
+      <dl class="hero-stats" id="hero-stats" hidden>
+        <div><dt>模型作品</dt><dd id="work-total"></dd></div>
+        <div><dt>模型系列</dt><dd id="family-total"></dd></div>
+      </dl>
     </section>
 
-    <section class="catalogue" aria-labelledby="catalogue-title">
-      <div class="catalogue-head">
-        <h2 id="catalogue-title">全部作品</h2>
-        <span class="count">15个模型生成结果</span>
-      </div>
-      <div class="models" id="models"></div>
-    </section>
+    <noscript><p class="notice">此目录需要JavaScript。你也可以在<a href="https://github.com/xiiiblue/pelican-bicycle">GitHub仓库</a>查看各作品的HTML文件。</p></noscript>
 
-    <footer class="site-footer">
-      <p>纯HTML动画对比实验·页面内容由对应模型生成</p>
-      <p class="footer-meta">
-        <span class="site-counter" aria-label="站点访问统计">
-          <span id="busuanzi_container_site_uv">访客 <strong id="busuanzi_value_site_uv">—</strong></span>
-          <span id="busuanzi_container_site_pv">浏览 <strong id="busuanzi_value_site_pv">—</strong></span>
-        </span>
-        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">鲁ICP备18050487号-1</a>
-      </p>
-    </footer>
+    <div class="workbench" id="workbench" hidden>
+      <section class="panel viewer" id="viewer" aria-labelledby="current-name">
+        <div class="viewer-head">
+          <div class="viewer-title">
+            <span class="viewer-label"><span class="status-dot"></span>当前演示</span>
+            <h2 id="current-name" aria-live="polite" tabindex="-1"></h2>
+          </div>
+          <div class="viewer-actions">
+            <div class="step-buttons">
+              <button class="icon-button" id="previous" type="button" aria-label="上一个作品" aria-keyshortcuts="ArrowLeft">
+                <svg class="icon" aria-hidden="true"><use href="#icon-left"/></svg>
+              </button>
+              <button class="icon-button" id="next" type="button" aria-label="下一个作品" aria-keyshortcuts="ArrowRight">
+                <svg class="icon" aria-hidden="true"><use href="#icon-right"/></svg>
+              </button>
+            </div>
+            <a class="open-link" id="open-link" target="_blank" rel="noopener" aria-label="在新标签页独立打开当前作品">
+              <span>独立打开</span><svg class="icon" aria-hidden="true"><use href="#icon-external"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="stage">
+          <iframe id="preview" title="模型生成作品预览" sandbox="allow-scripts"></iframe>
+        </div>
+        <div class="viewer-footer">
+          <p id="viewer-position" class="viewer-position"></p>
+          <p class="keyboard-hint"><kbd>←</kbd><kbd>→</kbd><span>切换作品</span></p>
+        </div>
+      </section>
+
+      <section class="panel catalogue" id="catalogue" aria-labelledby="catalogue-title">
+        <div class="catalogue-head">
+          <div class="catalogue-title">
+            <h2 id="catalogue-title">作品目录</h2>
+            <p id="result-count" role="status"></p>
+          </div>
+          <div class="filters">
+            <label class="search">
+              <svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg>
+              <input id="model-search" type="search" aria-label="搜索模型" placeholder="搜索模型" autocomplete="off" spellcheck="false">
+            </label>
+            <label class="family">
+              <select id="family-filter" aria-label="按模型系列筛选">
+                <option value="">全部系列</option>
+              </select>
+              <svg class="icon" aria-hidden="true"><use href="#icon-down"/></svg>
+            </label>
+          </div>
+        </div>
+        <div class="catalogue-body" id="catalogue-body">
+          <ul id="models" class="models"></ul>
+          <div class="empty-state" id="empty-state" hidden>
+            <p>没有找到符合条件的作品</p>
+            <button type="button" id="reset-filters">清除筛选</button>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 
-  <script>
-    const works = [
-      ["GPT-6.1 Terra", "pelican-bicycle-gpt-6.1-terra.html"],
-      ["GPT-6 Astra Medium", "pelican-bicycle-gpt-6-astra-medium.html"],
-      ["Gemini 4 Argon", "pelican-bicycle-gemini-4-argon.html"],
-      ["Gemini 3.8 Flash High", "pelican-bicycle-gemini-3.8-flash-high.html"],
-      ["GPT-5.6 Sol Medium", "pelican-bicycle-gpt-5.6-sol.html"],
-      ["GPT-5.6 Luna", "pelican-bicycle-gpt-5.6-luna.html"],
-      ["DeepSeek V4 Pro", "pelican-bicycle-deepseek-v4-pro.html"],
-      ["DeepSeek V4 Flash", "pelican-bicycle-deepseek-v4-flash.html"],
-      ["Qwen 3.8 Max", "pelican-bicycle-qwen-3.8-max.html"],
-      ["Qwen 3.8 Flash", "pelican-bicycle-qwen-3.8-flash.html"],
-      ["GLM-5.3", "pelican-bicycle-glm-5.3.html"],
-      ["GLM-5.3 Flash", "pelican-bicycle-glm-5.3-flash.html"],
-      ["Kimi K3", "pelican-bicycle-kimi-k3.html"],
-      ["Grok 4.6", "pelican-bicycle-grok-4.6.html"],
-      ["HY 4 Preview", "pelican-bicycle-hy-4-preview.html"]
-    ];
+  <template id="model-template">
+    <li>
+      <button type="button" class="model">
+        <span class="model-thumb">
+          <svg class="icon" aria-hidden="true"><use href="#icon-bike"/></svg>
+        </span>
+        <span class="model-info">
+          <span class="model-name"></span>
+          <span class="model-family"></span>
+        </span>
+        <span class="model-action" aria-hidden="true">
+          <svg class="icon model-chevron"><use href="#icon-chevron"/></svg>
+          <svg class="icon model-play"><use href="#icon-play"/></svg>
+        </span>
+      </button>
+    </li>
+  </template>
 
-    const list = document.querySelector("#models");
-    const frame = document.querySelector("#preview");
-    const name = document.querySelector("#current-name");
-    const openLink = document.querySelector("#open-link");
-    let selected = Math.max(0, works.findIndex(([, file]) => file === new URLSearchParams(location.search).get("work")));
-
-    works.forEach(([model], index) => {
-      const item = document.createElement("button");
-      item.className = "model";
-      item.type = "button";
-      item.innerHTML = `<span class="number">${String(index + 1).padStart(2, "0")}</span><span class="name">${model}</span><span class="arrow">→</span>`;
-      item.addEventListener("click", () => select(index, true));
-      list.append(item);
-    });
-
-    function select(index, scroll = false) {
-      selected = (index + works.length) % works.length;
-      const [model, file] = works[selected];
-      frame.src = file;
-      name.textContent = model;
-      openLink.href = file;
-      document.querySelectorAll(".model").forEach((item, itemIndex) => {
-        item.classList.toggle("active", itemIndex === selected);
-        item.setAttribute("aria-pressed", String(itemIndex === selected));
-      });
-      const url = new URL(location.href);
-      url.searchParams.set("work", file);
-      history.replaceState(null, "", url);
-      if (scroll) document.querySelector(".viewer").scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    document.querySelector("#previous").addEventListener("click", () => select(selected - 1));
-    document.querySelector("#next").addEventListener("click", () => select(selected + 1));
-    document.addEventListener("keydown", event => {
-      if (event.key === "ArrowLeft") select(selected - 1);
-      if (event.key === "ArrowRight") select(selected + 1);
-    });
-    select(selected);
-  </script>
-  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c1eb9e467bf94854a861cd5b98f19230"}'></script>
+  <footer class="shell site-footer">
+    <p>演示内容由对应模型生成。</p>
+    <div class="footer-meta">
+      <span id="busuanzi_container_site_uv">访客 <strong id="busuanzi_value_site_uv">—</strong></span>
+      <span id="busuanzi_container_site_pv">浏览 <strong id="busuanzi_value_site_pv">—</strong></span>
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">鲁ICP备18050487号-1</a>
+    </div>
+  </footer>
+  <script async referrerpolicy="no-referrer-when-downgrade" src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script async type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c1eb9e467bf94854a861cd5b98f19230"}'></script>
 </body>
 </html>
