@@ -1,7 +1,7 @@
 // 目录按此处的顺序展示，第一项是默认演示。thumbnail可省略。
 const works = [
   { name: "Gemini Neon High", family: "Gemini", file: "pelican-bicycle-gemini-neon-high.html", thumbnail: "gemini-neon-high.webp" },
-  { name: "Gemini Hydrogen", family: "Gemini", file: "pelican-cycling-gemini-hydrogen-high.html", thumbnail: "gemini-hydrogen.webp" },
+  { name: "Gemini Hydrogen High", family: "Gemini", file: "pelican-cycling-gemini-hydrogen-high.html", thumbnail: "gemini-hydrogen.webp" },
   { name: "GPT-6.2 Astra Medium", family: "GPT", file: "pelican-bicycle-gpt-6.2-astra-medium.html", thumbnail: "gpt-6.2-astra-medium.webp" },
   { name: "GPT-6.2 Sol Medium", family: "GPT", file: "pelican-bicycle-gpt-6.2-sol-medium.html", thumbnail: "gpt-6.2-sol-medium.webp" },
   { name: "GPT-6.1 Terra", family: "GPT", file: "pelican-bicycle-gpt-6.1-terra.html", thumbnail: "gpt-6.1-terra.webp" },
