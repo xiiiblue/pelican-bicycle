@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鹈鹕骑自行车 2D SVG 动画</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif);
+    color: var(--foreground, #1f2937);
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 728px;
+    margin: 0 auto;
+  }
+
+  .stage {
+    width: 100%;
+    border-radius: var(--radius, 14px);
+    overflow: hidden;
+    border: 1px solid var(--border, rgba(15, 23, 42, 0.12));
+  }
+
+  svg#scene {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius, 12px);
+    background: var(--card, rgba(248, 250, 252, 0.9));
+    color: var(--card-foreground, #1e293b);
+    border: 1px solid var(--border, rgba(15, 23, 42, 0.12));
+    font-size: 13px;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  button {
+    appearance: none;
+    border: 1px solid var(--border, rgba(15, 23, 42, 0.16));
+    background: var(--secondary, #e2e8f0);
+    color: var(--secondary-foreground, #0f172a);
+    border-radius: 8px;
+    padding: 5px 11px;
+    font-size: 12.5px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  button:active {
+    transform: translateY(1px);
+  }
+
+  button.active {
+    background: var(--primary, #0d9488);
+    color: var(--primary-foreground, #ffffff);
+    border-color: transparent;
+  }
+
+  .hint {
+    font-size: 12px;
+    opacity: 0.72;
+  }
+
+  #eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: blink 4.4s infinite;
+  }
+
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.08); }
+  }
+
+  .ring-wave {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .ring-wave.ringing {
+    animation: bellRing 0.65s ease-out forwards;
+  }
+
+  @keyframes bellRing {
+    0%   { opacity: 0.95; transform: scale(0.6); }
+    100% { opacity: 0;    transform: scale(2.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #eye { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage">
+    <svg id="scene" viewBox="0 0 800 480" role="img" aria-label="一只鹈鹕骑着自行车沿着海滨公路前进的2D动画">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6fc3e8"/>
+          <stop offset="62%" stop-color="#c9ecfa"/>
+          <stop offset="100%" stop-color="#fef2d0"/>
+        </linearGradient>
+
+        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4ea8cc"/>
+          <stop offset="100%" stop-color="#2c7da0"/>
+        </linearGradient>
+
+        <linearGradient id="beakGrad" x1="0" y1="0" x2="1" y2="0.2">
+          <stop offset="0%" stop-color="#fcc252"/>
+          <stop offset="70%" stop-color="#f59e2d"/>
+          <stop offset="100%" stop-color="#e56b24"/>
+        </linearGradient>
+
+        <linearGradient id="pouchGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f7a035"/>
+          <stop offset="100%" stop-color="#d96b1f"/>
+        </linearGradient>
+
+        <linearGradient id="roadGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#646d78"/>
+          <stop offset="100%" stop-color="#4b525c"/>
+        </linearGradient>
+
+        <!-- 可复用的云朵 -->
+        <g id="cloudA" fill="#ffffff">
+          <ellipse cx="0" cy="0" rx="46" ry="18"/>
+          <ellipse cx="32" cy="-10" rx="32" ry="16"/>
+          <ellipse cx="-30" cy="5" rx="26" ry="12"/>
+        </g>
+
+        <!-- 可复用的海鸥 -->
+        <g id="gull" stroke="#537185" stroke-width="2.4" fill="none" stroke-linecap="round">
+          <path d="M-12 5 Q-6 -3 0 5 Q6 -3 12 5"/>
+        </g>
+
+        <!-- 可复用的海滨树丛 -->
+        <g id="treeCluster">
+          <path d="M0 0 Q-4 -26 -2 -52" stroke="#7c5638" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <ellipse cx="-14" cy="-54" rx="20" ry="11" fill="#5da65b" transform="rotate(-18 -14 -54)"/>
+          <ellipse cx="14" cy="-54" rx="20" ry="11" fill="#4d944c" transform="rotate(18 14 -54)"/>
+          <ellipse cx="0" cy="-64" rx="16" ry="13" fill="#6ab865"/>
+        </g>
+
+        <!-- 单个周期 520px 的海岸山丘与树木单元 -->
+        <g id="hillTile">
+          <path d="M0 345 Q130 292 260 326 Q390 360 520 345 L520 365 L0 365 Z" fill="#8dc787"/>
+          <path d="M0 350 Q140 318 280 340 Q400 356 520 350 L520 365 L0 365 Z" fill="#6fb56b"/>
+          <use href="#treeCluster" x="115" y="352"/>
+          <g transform="translate(380, 352) scale(0.86)">
+            <use href="#treeCluster" x="0" y="0"/>
+          </g>
+        </g>
+
+        <!-- 可复用的前景草丛 -->
+        <g id="grassTuft">
+          <path d="M0 0 L3 -13 L7 0 L11 -10 L14 0" stroke="#428a41" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+          <path d="M17 0 L20 -8 L23 0" stroke="#74c36d" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        </g>
+      </defs>
+
+      <!-- 1. 天空与太阳 -->
+      <rect width="800" height="480" fill="url(#skyGrad)"/>
+      <g id="sun">
+        <circle cx="105" cy="82" r="56" fill="#ffe17d" opacity="0.28"/>
+        <circle cx="105" cy="82" r="38" fill="#ffd257"/>
+      </g>
+
+      <!-- 2. 云层与海鸥（960px 周期无缝循环） -->
+      <g id="cloudsLayer" opacity="0.9">
+        <g id="cloudsTile">
+          <use href="#cloudA" x="190" y="96"/>
+          <g transform="translate(460, 68) scale(0.82)"><use href="#cloudA"/></g>
+          <g transform="translate(760, 132) scale(0.92)"><use href="#cloudA"/></g>
+        </g>
+        <use href="#cloudsTile" x="960"/>
+      </g>
+
+      <g id="gullsLayer">
+        <g id="gullsTile">
+          <use href="#gull" x="280" y="148"/>
+          <g transform="translate(310, 135) scale(0.75)"><use href="#gull"/></g>
+          <use href="#gull" x="620" y="112"/>
+        </g>
+        <use href="#gullsTile" x="960"/>
+      </g>
+
+      <!-- 3. 远景海面、波光与帆船 -->
+      <rect x="0" y="302" width="800" height="50" fill="url(#seaGrad)"/>
+      <g id="seaWaves" stroke="#b6e5f5" stroke-width="2" stroke-linecap="round" opacity="0.45">
+        <g id="wavesTile">
+          <line x1="40" y1="316" x2="96" y2="316"/>
+          <line x1="180" y1="328" x2="236" y2="328"/>
+          <line x1="340" y1="314" x2="404" y2="314"/>
+        </g>
+        <use href="#wavesTile" x="420"/>
+        <use href="#wavesTile" x="840"/>
+      </g>
+
+      <g id="sailboat" transform="translate(640, 304)">
+        <path d="M-18 0 L18 0 L12 8 L-12 8 Z" fill="#d96b43"/>
+        <line x1="0" y1="0" x2="0" y2="-28" stroke="#f8fafc" stroke-width="2"/>
+        <path d="M2 -26 L18 -4 L2 -4 Z" fill="#ffffff"/>
+        <path d="M-1 -22 L-12 -5 L-1 -5 Z" fill="#fde68a"/>
+      </g>
+
+      <!-- 4. 中景海岸山丘与树（520px 周期无缝循环） -->
+      <g id="hillsLayer">
+        <use href="#hillTile" x="0"/>
+        <use href="#hillTile" x="520"/>
+        <use href="#hillTile" x="1040"/>
+      </g>
+
+      <!-- 5. 草地路肩与柏油路 -->
+      <rect x="0" y="350" width="800" height="16" fill="#67ad62"/>
+      <rect x="0" y="366" width="800" height="8" fill="#e5d3a1"/>
+      <rect x="0" y="374" width="800" height="90" fill="url(#roadGrad)"/>
+      <rect x="0" y="374" width="800" height="4" fill="#414852"/>
+
+      <!-- 路面白色虚线（160px 周期，与车轮线速度严格同步） -->
+      <g id="roadDashes" fill="#f1f5f9" opacity="0.92">
+        <rect x="-160" y="416" width="76" height="9" rx="4.5"/>
+        <rect x="0"    y="416" width="76" height="9" rx="4.5"/>
+        <rect x="160"  y="416" width="76" height="9" rx="4.5"/>
+        <rect x="320"  y="416" width="76" height="9" rx="4.5"/>
+        <rect x="480"  y="416" width="76" height="9" rx="4.5"/>
+        <rect x="640"  y="416" width="76" height="9" rx="4.5"/>
+        <rect x="800"  y="416" width="76" height="9" rx="4.5"/>
+        <rect x="960"  y="416" width="76" height="9" rx="4.5"/>
+      </g>
+
+      <!-- 6. 路沿前景草坡（320px 周期无缝循环） -->
+      <rect x="0" y="464" width="800" height="16" fill="#5aa258"/>
+      <rect x="0" y="462" width="800" height="4" fill="#77bf72"/>
+      <g id="fgLayer">
+        <g id="fgTile">
+          <use href="#grassTuft" x="20"  y="468"/>
+          <use href="#grassTuft" x="180" y="470"/>
+          <circle cx="95"  cy="473" r="2.6" fill="#fde047"/>
+          <circle cx="255" cy="472" r="2.6" fill="#ffffff"/>
+        </g>
+        <use href="#fgTile" x="320"/>
+        <use href="#fgTile" x="640"/>
+        <use href="#fgTile" x="960"/>
+      </g>
+
+      <!-- 地面投影 -->
+      <ellipse cx="402" cy="422" rx="185" ry="11" fill="#0f172a" opacity="0.22"/>
+
+      <!-- 7. 自行车后层部件 -->
+      <g id="bikeBack">
+        <!-- 后轮 (圆心 285, 362 半径 58) -->
+        <circle cx="285" cy="362" r="58" fill="none" stroke="#262b30" stroke-width="11"/>
+        <circle cx="285" cy="362" r="47" fill="none" stroke="#cbd5e1" stroke-width="3.5"/>
+        <g id="spokesR" stroke="#94a3b8" stroke-width="2.4">
+          <line x1="238" y1="362" x2="332" y2="362"/>
+          <line x1="285" y1="315" x2="285" y2="409"/>
+          <line x1="252" y1="329" x2="318" y2="395"/>
+          <line x1="252" y1="395" x2="318" y2="329"/>
+          <circle cx="285" cy="362" r="8" fill="#475569" stroke="none"/>
+          <circle cx="285" cy="322" r="3.8" fill="#ef4444" stroke="none"/>
+        </g>
+        <!-- 后挡泥板 -->
+        <path d="M 220 348 A 67 67 0 0 1 325 308" fill="none" stroke="#0f766e" stroke-width="6" stroke-linecap="round"/>
+
+        <!-- 前轮 (圆心 515, 362 半径 58) -->
+        <circle cx="515" cy="362" r="58" fill="none" stroke="#262b30" stroke-width="11"/>
+        <circle cx="515" cy="362" r="47" fill="none" stroke="#cbd5e1" stroke-width="3.5"/>
+        <g id="spokesF" stroke="#94a3b8" stroke-width="2.4">
+          <line x1="468" y1="362" x2="562" y2="362"/>
+          <line x1="515" y1="315" x2="515" y2="409"/>
+          <line x1="482" y1="329" x2="548" y2="395"/>
+          <line x1="482" y1="395" x2="548" y2="329"/>
+          <circle cx="515" cy="362" r="8" fill="#475569" stroke="none"/>
+          <circle cx="515" cy="322" r="3.8" fill="#ef4444" stroke="none"/>
+        </g>
+
+        <!-- 链条 -->
+        <g stroke="#475569" stroke-width="3" stroke-dasharray="6 4">
+          <line id="chainTop" x1="285" y1="354" x2="392" y2="348"/>
+          <line id="chainBot" x1="285" y1="370" x2="392" y2="380"/>
+        </g>
+
+        <!-- 远侧曲柄与脚踏 -->
+        <line id="crankFar" x1="392" y1="364" x2="392" y2="364" stroke="#334155" stroke-width="5.5" stroke-linecap="round"/>
+        <rect id="pedalFar" x="-12" y="-3.5" width="24" height="7" rx="3" fill="#1e293b"/>
+      </g>
+
+      <!-- 8. 远侧的腿（被车身遮挡） -->
+      <g>
+        <path id="legFar" fill="none" stroke="#bd7133" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <g id="footFar">
+          <path d="M -9 -3 L 3 -6 L 14 -2 L 8 1 L 14 4 L 2 6 L -9 3 Z" fill="#8b4d22"/>
+        </g>
+      </g>
+
+      <!-- 9. 车架、车座、车把与前车篮 -->
+      <g id="bikeFrame">
+        <g stroke="#0d9488" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <line x1="392" y1="364" x2="285" y2="362"/>
+          <line x1="358" y1="304" x2="285" y2="362"/>
+          <line x1="358" y1="304" x2="392" y2="364"/>
+          <line x1="358" y1="304" x2="482" y2="266"/>
+          <line x1="476" y1="278" x2="392" y2="364"/>
+          <line x1="484" y1="260" x2="476" y2="278"/>
+          <line x1="476" y1="278" x2="515" y2="362"/>
+        </g>
+        <line x1="361" y1="302" x2="480" y2="265" stroke="#5eead4" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+
+        <!-- 座管与皮质车座 -->
+        <line x1="358" y1="304" x2="354" y2="286" stroke="#334155" stroke-width="5.5" stroke-linecap="round"/>
+        <path d="M 332 282 C 346 273 374 273 384 283 C 380 293 340 294 332 282 Z" fill="#7c4728"/>
+
+        <!-- 车把与车铃 -->
+        <line x1="484" y1="260" x2="490" y2="232" stroke="#334155" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M 490 232 Q 478 225 462 230" fill="none" stroke="#334155" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="472" y1="227" x2="458" y2="231" stroke="#1e293b" stroke-width="9.5" stroke-linecap="round"/>
+
+        <!-- 车铃及响铃波纹 -->
+        <g id="bellGroup" style="cursor:pointer;">
+          <circle cx="481" cy="224" r="6" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/>
+          <circle class="ring-wave" id="ringWave1" cx="481" cy="224" r="10" fill="none" stroke="#f59e0b" stroke-width="2.2"/>
+          <circle class="ring-wave" id="ringWave2" cx="481" cy="224" r="16" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+        </g>
+
+        <!-- 前车篮与鲜鱼 -->
+        <g id="basket">
+          <line x1="484" y1="266" x2="508" y2="266" stroke="#475569" stroke-width="3"/>
+          <g transform="translate(524, 240) rotate(-25)">
+            <ellipse cx="0" cy="0" rx="14" ry="7" fill="#60a5fa"/>
+            <path d="M12 0 L22 -7 L20 0 L22 7 Z" fill="#3b82f6"/>
+            <circle cx="-6" cy="-2" r="1.8" fill="#0f172a"/>
+          </g>
+          <path d="M 495 244 L 542 244 L 535 280 L 500 280 Z" fill="#d49b54" stroke="#9a682a" stroke-width="2.5" stroke-linejoin="round"/>
+          <line x1="497" y1="256" x2="539" y2="256" stroke="#9a682a" stroke-width="2"/>
+          <line x1="499" y1="268" x2="537" y2="268" stroke="#9a682a" stroke-width="2"/>
+        </g>
+
+        <!-- 后飞轮与前牙盘 -->
+        <circle cx="285" cy="362" r="8" fill="#e2e8f0" stroke="#475569" stroke-width="2.5"/>
+        <g id="chainring">
+          <circle cx="392" cy="364" r="16" fill="#e2e8f0" stroke="#475569" stroke-width="3.5"/>
+          <line x1="380" y1="364" x2="404" y2="364" stroke="#64748b" stroke-width="2.5"/>
+          <line x1="392" y1="352" x2="392" y2="376" stroke="#64748b" stroke-width="2.5"/>
+          <circle cx="392" cy="364" r="5" fill="#475569"/>
+        </g>
+      </g>
+
+      <!-- 10. 鹈鹕身体（随踩踏节奏轻柔颠动） -->
+      <g id="pelicanBob">
+        <!-- 尾羽 -->
+        <path d="M 294 236 C 270 248 254 270 248 292 C 272 286 293 276 308 260 Z" fill="#e5dec9"/>
+
+        <!-- 身体轮廓与腹部高光 -->
+        <ellipse cx="358" cy="236" rx="74" ry="54" fill="#fbf7ec" transform="rotate(-10 358 236)"/>
+        <ellipse cx="366" cy="254" rx="50" ry="30" fill="#efe7d2" opacity="0.7" transform="rotate(-10 366 254)"/>
+
+        <!-- S形长脖子 -->
+        <path d="M 412 206 C 438 194 434 166 448 152" fill="none" stroke="#fbf7ec" stroke-width="28" stroke-linecap="round"/>
+
+        <!-- 头顶翘起的呆毛 -->
+        <path d="M 432 132 Q 422 120 427 109 M 440 128 Q 436 116 443 108" fill="none" stroke="#e5dec9" stroke-width="3.6" stroke-linecap="round"/>
+
+        <!-- 头部 -->
+        <circle cx="452" cy="148" r="22" fill="#fbf7ec"/>
+
+        <!-- 长喙与大喉囊（贴合无间隙） -->
+        <g id="beakGroup">
+          <path id="pouch" d="M 470 156 C 480 194 504 216 534 214 C 566 212 580 184 584 162 L 470 156 Z" fill="url(#pouchGrad)"/>
+          <path d="M 466 135 C 514 140 562 152 590 164 C 558 164 510 161 469 156 C 463 149 463 141 466 135 Z" fill="url(#beakGrad)"/>
+          <path d="M 470 156 Q 528 162 584 163" stroke="#b45309" stroke-width="2" fill="none" opacity="0.55"/>
+        </g>
+
+        <!-- 腮红与眨眼眼睛 -->
+        <ellipse cx="456" cy="154" rx="5.5" ry="3" fill="#fca5a5" opacity="0.55"/>
+        <g id="eye">
+          <circle cx="449" cy="141" r="4.5" fill="#1e293b"/>
+          <circle cx="450.5" cy="139.5" r="1.4" fill="#ffffff"/>
+        </g>
+
+        <!-- 收起的近侧翅膀 -->
+        <path d="M 314 212 C 344 190 396 198 414 234 C 400 262 346 274 312 254 Z" fill="#dfd6c0"/>
+        <path d="M 336 227 Q 364 240 392 232 M 332 241 Q 360 256 388 247" fill="none" stroke="#cbc0a4" stroke-width="2.8" stroke-linecap="round"/>
+
+        <!-- 飘扬的红围巾 -->
+        <path id="scarfTail" d="M 426 184 Q 398 188 374 180 Q 390 198 424 196 Z" fill="#ef4444"/>
+        <path d="M 420 176 Q 436 182 448 176" fill="none" stroke="#dc2626" stroke-width="11" stroke-linecap="round"/>
+      </g>
+
+      <!-- 伸出扶把的手/翅膀（末端保持抓紧车把） -->
+      <path id="wingArm" d="M 412 216 C 432 232 446 236 462 230" fill="none" stroke="#fbf7ec" stroke-width="14" stroke-linecap="round"/>
+      <circle cx="462" cy="230" r="7.5" fill="#dfd6c0"/>
+
+      <!-- 11. 近侧腿、曲柄、脚踏与蹼足（最上层） -->
+      <path id="legNear" fill="none" stroke="#e08a3c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <line id="crankNear" x1="392" y1="364" x2="392" y2="364" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+      <rect id="pedalNear" x="-12" y="-3.5" width="24" height="7" rx="3" fill="#1e293b"/>
+      <g id="footNear">
+        <path d="M -9 -3 L 3 -6 L 14 -2 L 8 1 L 14 4 L 2 6 L -9 3 Z" fill="#a85b24"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="btn-group">
+      <button type="button" data-speed="0.55">慢速兜风</button>
+      <button type="button" data-speed="1" class="active">正常骑行</button>
+      <button type="button" data-speed="1.75">冲刺加速</button>
+      <button type="button" id="toggleBtn">暂停</button>
+      <button type="button" id="bellBtn">按车铃</button>
+    </div>
+    <span class="hint">可点击速度档位或车铃互动</span>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const C = { x: 392, y: 364 };
+  const CRANK_R = 22;
+  const WHEEL_R = 58;
+  const L1 = 52;
+  const L2 = 52;
+
+  const BASE_PEDAL_RAD = Math.PI * 2 * 0.72;
+  const BASE_WHEEL_RAD = 3.9;
+  const BASE_GROUND_PX = BASE_WHEEL_RAD * WHEEL_R;
+
+  const spokesR = $('spokesR');
+  const spokesF = $('spokesF');
+  const chainring = $('chainring');
+  const roadDashes = $('roadDashes');
+  const fgLayer = $('fgLayer');
+  const hillsLayer = $('hillsLayer');
+  const cloudsLayer = $('cloudsLayer');
+  const gullsLayer = $('gullsLayer');
+  const seaWaves = $('seaWaves');
+  const sailboat = $('sailboat');
+  const pelicanBob = $('pelicanBob');
+  const scarfTail = $('scarfTail');
+  const wingArm = $('wingArm');
+  const pouch = $('pouch');
+  const bellGroup = $('bellGroup');
+  const ringWave1 = $('ringWave1');
+  const ringWave2 = $('ringWave2');
+  const toggleBtn = $('toggleBtn');
+  const bellBtn = $('bellBtn');
+
+  const legs = [
+    {
+      crank: $('crankFar'),
+      pedal: $('pedalFar'),
+      leg: $('legFar'),
+      foot: $('footFar'),
+      hip: { x: 356, y: 290 },
+      phase: Math.PI
+    },
+    {
+      crank: $('crankNear'),
+      pedal: $('pedalNear'),
+      leg: $('legNear'),
+      foot: $('footNear'),
+      hip: { x: 368, y: 286 },
+      phase: 0
+    }
+  ];
+
+  // 双连杆逆向运动学：由髋部 H 与脚踝 F 求解向前弯曲的膝盖坐标 K
+  function solveKnee(H, F) {
+    let dx = F.x - H.x;
+    let dy = F.y - H.y;
+    let d = Math.hypot(dx, dy);
+    const maxD = L1 + L2 - 1;
+    if (d > maxD) {
+      dx *= maxD / d;
+      dy *= maxD / d;
+      d = maxD;
+    }
+    if (d < 1e-3) d = 1e-3;
+    const a = (L1 * L1 - L2 * L2 + d * d) / (2 * d);
+    const h = Math.sqrt(Math.max(L1 * L1 - a * a, 0));
+    const ux = dx / d;
+    const uy = dy / d;
+    const px = -uy;
+    const py = ux;
+    const dir = px > 0 ? 1 : -1;
+    return {
+      x: H.x + ux * a + px * h * dir,
+      y: H.y + uy * a + py * h * dir
+    };
+  }
+
+  function triggerBell() {
+    for (const el of [ringWave1, ringWave2]) {
+      el.classList.remove('ringing');
+      void el.offsetWidth;
+      el.classList.add('ringing');
+    }
+  }
+
+  bellBtn.addEventListener('click', triggerBell);
+  bellGroup.addEventListener('click', triggerBell);
+
+  let speedMult = 1;
+  let paused = false;
+  let simTime = 0;
+
+  document.querySelectorAll('button[data-speed]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      speedMult = parseFloat(btn.dataset.speed);
+      document.querySelectorAll('button[data-speed]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  toggleBtn.addEventListener('click', () => {
+    paused = !paused;
+    toggleBtn.textContent = paused ? '继续' : '暂停';
+  });
+
+  function renderFrame(t) {
+    const th = t * BASE_PEDAL_RAD;
+    const wheelDeg = (t * BASE_WHEEL_RAD * 180) / Math.PI;
+    const groundDist = t * BASE_GROUND_PX;
+
+    // 车轮与牙盘旋转
+    spokesR.setAttribute('transform', `rotate(${wheelDeg} 285 362)`);
+    spokesF.setAttribute('transform', `rotate(${wheelDeg} 515 362)`);
+    chainring.setAttribute('transform', `rotate(${(th * 180) / Math.PI} 392 364)`);
+
+    // 地面与多层视差背景无缝循环滚动
+    roadDashes.setAttribute('transform', `translate(${-(groundDist % 160)} 0)`);
+    fgLayer.setAttribute('transform', `translate(${-((groundDist * 1.18) % 320)} 0)`);
+    hillsLayer.setAttribute('transform', `translate(${-((groundDist * 0.22) % 520)} 0)`);
+    seaWaves.setAttribute('transform', `translate(${-((groundDist * 0.08) % 420)} 0)`);
+    cloudsLayer.setAttribute('transform', `translate(${-((t * 10) % 960)} 0)`);
+    gullsLayer.setAttribute('transform', `translate(${-((t * 18) % 960)} ${Math.sin(t * 2.4) * 4})`);
+    sailboat.setAttribute('transform', `translate(${840 - ((t * 8 + 200) % 900)} ${304 + Math.sin(t * 1.8) * 1.5})`);
+
+    // 鹈鹕身体轻柔颠簸与摇摆
+    const bobY = Math.sin(th * 2) * 2.5;
+    const tilt = Math.sin(th * 2 + 0.6) * 1.4;
+    pelicanBob.setAttribute('transform', `translate(0 ${bobY}) rotate(${tilt} 358 240)`);
+
+    // 扶把翅膀末端锁定在车把 (462, 230)
+    wingArm.setAttribute('d', `M 412 ${216 + bobY} C 432 ${232 + bobY * 0.5} 446 236 462 230`);
+
+    // 围巾随风摆动，喉囊围绕上喙边缘轻微弹性晃动
+    scarfTail.setAttribute('transform', `rotate(${Math.sin(t * 10) * 11 - 4} 426 184)`);
+    const pouchScale = 1 + Math.sin(th * 2) * 0.03;
+    pouch.setAttribute('transform', `translate(527 158) scale(1 ${pouchScale}) translate(-527 -158)`);
+
+    // 双腿逆向运动学
+    for (const p of legs) {
+      const ang = th + p.phase;
+      const px = C.x + CRANK_R * Math.cos(ang);
+      const py = C.y + CRANK_R * Math.sin(ang);
+
+      p.crank.setAttribute('x2', px);
+      p.crank.setAttribute('y2', py);
+      p.pedal.setAttribute('transform', `translate(${px} ${py})`);
+
+      const H = { x: p.hip.x, y: p.hip.y + bobY };
+      const F = { x: px, y: py - 8 };
+      const K = solveKnee(H, F);
+
+      p.leg.setAttribute('d', `M ${H.x} ${H.y} L ${K.x} ${K.y} L ${F.x} ${F.y}`);
+      p.foot.setAttribute('transform', `translate(${px} ${py - 8}) rotate(${Math.cos(ang) * 7})`);
+    }
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    renderFrame(0.35);
+    return;
+  }
+
+  let last = performance.now();
+  function loop(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    if (!paused) {
+      simTime += dt * speedMult;
+      renderFrame(simTime);
+    }
+    requestAnimationFrame(loop);
+  }
+  renderFrame(0);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
